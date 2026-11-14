@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Kepler Space Telescope - Interactive 3D Dismantling Experience</title>
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- ES Module Import Map for local self-contained Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./vendor/three.module.js",
+            "three/addons/": "./vendor/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- 3D Canvas Viewport -->
+    <div id="canvas-container"></div>
+
+    <!-- Top Left Header -->
+    <header class="header-bar">
+        <div class="nasa-logo">
+            <span class="nasa-badge">NASA</span>
+        </div>
+        <div class="header-titles">
+            <h1 class="header-title">
+                Kepler Space Telescope
+                <span class="mission-badge"><span class="pulse-dot"></span>2,700+ Exoplanets</span>
+            </h1>
+            <p class="header-subtitle">Interactive 3D Spacecraft Dismantling Experience</p>
+        </div>
+    </header>
+
+    <!-- Top Center Component Quick-Picker Pills -->
+    <nav class="component-pills-bar" id="component-pills-bar" aria-label="Spacecraft Components">
+        <div id="component-pills-list"></div>
+    </nav>
+
+    <!-- Right Side Educational Storytelling Panel -->
+    <aside class="info-panel" id="info-panel" aria-label="Component Information">
+        <div class="panel-header">
+            <span class="info-badge" id="info-tag">Mission Overview</span>
+            <button class="panel-close-btn" id="btn-close-panel" title="Minimize Panel" aria-label="Minimize Panel">✕</button>
+            <h2 class="panel-title" id="info-title">NASA Kepler Spacecraft</h2>
+        </div>
+        <div class="panel-body">
+            <p class="panel-desc" id="info-desc">
+                Loading educational telemetry and component data...
+            </p>
+            <div class="specs-grid" id="info-specs"></div>
+            <div id="info-context"></div>
+        </div>
+        <div class="panel-footer">
+            <button class="action-btn-primary" id="info-action-btn" style="display: none;">
+                Separate Component
+            </button>
+        </div>
+    </aside>
+
+    <!-- Bottom Controls Toolbar -->
+    <div class="bottom-controls-bar" role="toolbar" aria-label="3D Viewer Controls">
+        <button class="ctrl-btn btn-featured" id="btn-exploded-view" title="Separate all major spacecraft components">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            </span>
+            <span class="btn-label">Exploded View</span>
+        </button>
+
+        <button class="ctrl-btn" id="btn-assemble" title="Restore complete spacecraft assembly">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
+            </span>
+            <span class="btn-label">Assemble Spacecraft</span>
+        </button>
+
+        <div class="controls-divider"></div>
+
+        <button class="ctrl-btn" id="btn-reset-cam" title="Reset camera viewpoint">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </span>
+            <span class="btn-label">Reset Camera</span>
+        </button>
+
+        <button class="ctrl-btn" id="btn-auto-rotate" title="Toggle automatic turntable rotation">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9h-4"/><path d="m17 8 4 4-4 4"/></svg>
+            </span>
+            <span class="btn-label">Orbit</span>
+        </button>
+
+        <button class="ctrl-btn" id="btn-xray" title="Toggle structural X-Ray wireframe mode">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </span>
+            <span class="btn-label">X-Ray</span>
+        </button>
+
+        <button class="ctrl-btn" id="btn-story-overview" title="View mission summary & history">
+            <span class="ctrl-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span class="btn-label">Mission Info</span>
+        </button>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-overlay">
+        <div class="loader-content">
+            <div class="spacecraft-icon-pulse">
+                <svg viewBox="0 0 64 64">
+                    <polygon points="32 6 48 20 48 46 32 58 16 46 16 20 32 6"/>
+                    <circle cx="32" cy="32" r="10"/>
+                    <line x1="8" y1="32" x2="16" y2="32"/>
+                    <line x1="48" y1="32" x2="56" y2="32"/>
+                </svg>
+            </div>
+            <h2 class="loader-title">NASA Kepler Observatory</h2>
+            <p class="loader-subtitle">Preparing 3D Interactive Dismantling Experience</p>
+            <div class="progress-container">
+                <div id="loading-progress-bar"></div>
+            </div>
+            <span id="loading-text">Loading spacecraft telemetry...</span>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="hidden">
+        <div class="error-card">
+            <h3 class="error-title">Telemetry Signal Interrupted</h3>
+            <p id="error-message">Could not load the 3D model asset.</p>
+            <button class="btn-retry" onclick="location.reload()">Re-establish Connection</button>
+        </div>
+    </div>
+
+    <!-- Main Application Module -->
+    <script type="module" src="./js/app.js"></script>
+</body>
+</html>
